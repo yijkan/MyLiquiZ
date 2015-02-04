@@ -42,11 +42,14 @@
     <div class="quiz">
 	<div class="QC">
 	  Type of question<br/>
-	  <select class="question chosen-select drop singledrop" data-placeholder="Choose a question type" id="qtype">
-	    <!-- placeholder not working -->
-	    <option value="none" selected></option>
+	  <select class="question chosen-select drop singledrop" id="qtype">
+	    <!-- do placeholder eventually -->
+	    <!-- value names match the classnames of the elements that should be shown when selected -->
+	    <option value="none" selected disabled style="display:none;">Choose a question type</option>
 	    <option value="dropdown">Dropdown</option>
 	    <option value="mult-dropdown">Multiple Dropdown</option>
+	    <option value="radio">Single Multiple Choice</option>
+	    <option value="check">Choose Multiple</option>
 	    <option value="fillin">Fillin</option>
 	    <option value="essay">Essay</option>
 	    <option value="codeQ">Code</option>
@@ -61,20 +64,30 @@
 	  Placeholder Text<br/>
 	  <textarea class="question" id="pholder" rows=1 cols=30></textarea>
 	</div>
-	<div class="QC qtype dropdown mult-dropdown"  style="display: none;">
-	  Type in answer choices and select the correct answer<span class="qtype mult-dropdown">s</span><br/>
+
+	<!-- This is difficult to do in JS but I don't think it'll be needed in any other case so might as well hard code HTML it -->
+	<div class="QC qtype dropdown mult-dropdown radio check"  style="display: none;">
+	  Type in answer choices and select the correct answer<span class="qtype mult-dropdown check">s</span><br/>
 	  
-	  <form class="question" name="dropdownAns">
-	    <input class="qtype dropdown" type="radio" name="choices" value=0></input>
-	    <input class="qtype mult-dropdown" type="checkbox" name="m-choices" value=0></input>
-	      <input type="text" id="choice0"></input><br/>
-	    <input class="qtype dropdown" type="radio" name="choices" value=1></input>
-	    <input class="qtype mult-dropdown" type="checkbox" name="m-choices" value=1></input>
-	      <input type="text" id="choice1"></input><br/>
-	    <input class="qtype dropdown" type="radio" name="choices" value=2></input>
-	    <input class="qtype mult-dropdown" type="checkbox" name="m-choices" value=2></input>
-	      <input type="text" id="choice2"></input>
+	  <form class="question" name="multAns">
+	  	<div class="choice">
+	      <input class="qtype dropdown radio" type="radio" name="choices" value=0></input>
+	      <input class="qtype mult-dropdown check" type="checkbox" name="m-choices" value=0></input>
+	        <textarea id="choice0" rows=1 cols=30></textarea>
+	    </div>
+	    <div class="choice">
+	      <input class="qtype dropdown radio" type="radio" name="choices" value=1></input>
+	      <input class="qtype mult-dropdown check" type="checkbox" name="m-choices" value=1></input>
+	        <textarea id="choice1" rows=1 cols=30></textarea>
+	    </div>
+	    <div class="choice">
+	      <input class="qtype dropdown radio" type="radio" name="choices" value=2></input>
+	      <input class="qtype mult-dropdown check" type="checkbox" name="m-choices" value=2></input>
+	        <textarea id="choice2" rows=1 cols=30></textarea>
+	    </div>
 	  </form>
+
+	  <button id="addChoice">Add Choice</button> <button id="removeChoice">Remove Choice</button>
 	</div>
 
 	<div class="QC qtype fillin" style="display: none;">
@@ -87,14 +100,15 @@
 	  <textarea class="question code" id="baseCode" rows=5 cols=50></textarea>
 	</div>
 
-	<button id="add" style="display: none;">Add question</button>
+	<button id="add" style="display: none;">Add Question</button>
     </div>
-    <script>
-	$('#qtype').change(function(e) {
-	  var type = $('#qtype').val();
-	  $('.qtype').hide();
-	  $('.'+type).show();
 
+    <button id="save">Save Quiz</button>
+
+    <script>
+    showHide("qtype");
+	$('#qtype').change(function(e) {
+	  type = $('#qtype').val();
 	  if (type == "none") {
 	    $('#add').hide();
 	  } else {
@@ -102,11 +116,53 @@
 	  }
 	});
 
+	var quizSave;
+
+	$('#addChoice').click(function(e) {
+		var index = document.getElementsByClassName("choice").length; // 1 more than the index of the last choice
+		var container = document.createElement("DIV");
+		$(container).addClass("choice");
+
+		var input = document.createElement("INPUT");
+		$(input).addClass("qtype dropdown radio")
+		$(input).attr("type", "radio");
+		$(input).attr("name", "choices");
+		$(input).attr("value", index);
+		if($("#qtype").val() == "mult-dropdown" || $("#qtype").val() == "check") {
+			$(input).hide();
+		}
+		$(container).append(input);
+
+		var inputm = document.createElement("INPUT");
+		$(inputm).addClass("qtype mult-dropdown check")
+		$(inputm).attr("type", "checkbox");
+		$(inputm).attr("name", "m-choices");
+		$(inputm).attr("value", index);
+		if($("#qtype").val() == "dropdown" || $("#qtype").val() == "radio") {
+			$(inputm).hide();
+		}
+		$(container).append(inputm);
+
+		var textArea = document.createElement("TEXTAREA");
+		$(textArea).attr("id","choice"+index);
+		$(textArea).attr("rows",""+1);
+		$(textArea).attr("cols",""+30);
+		$(container).append(" ");
+		$(container).append(textArea);
+
+		$(document.getElementsByName("multAns")[0]).append(container);
+	});
+
+	$('#removeChoice').click(function(e){
+		var choices = document.getElementsByClassName("choice");
+		$(choices[choices.length-1]).remove();
+	});
+
 	$('#add').click(function(e) {
-	  var text = $("#quesText").val();
-	  var question = document.createElement("DIV");
-	  $(question).addClass("Q"); // "QC"
-	  $(question).append(text+"<br/>");
+	  //TODO: check for empty fields
+	  var elements = [];
+	  var text = $("#quesText").val() + "<br/>";
+	  elements.push(text);
 	  
 	  var type = $('#qtype').val();
 	  switch(type) {
@@ -119,7 +175,7 @@
 		      console.log(document.getElementById("choice"+i).value + " is checked");
 		    }
 	      };
-	      $(question).append(dropdown(placeholder, aList, false));
+	      elements.push(dropdown(placeholder, aList, false));
 	      break;
 	    case "mult-dropdown":
 	      var placeholder = $("#pholder").val();
@@ -130,28 +186,52 @@
 		      console.log(document.getElementById("choice"+i).value + " is checked");
 		    }
 	      };
-	      $(question).append(dropdown(placeholder, aList, true));
+	      elements.push(dropdown(placeholder,aList,true));
+	      break;
+	    case "radio":
+	      var aList = [];
+	      for (var i = 0; i < document.getElementsByName("choices").length; i++) {
+		    aList.push(document.getElementById("choice"+i).value);
+		    if (document.getElementsByName("choices")[i].checked) {
+		      console.log(document.getElementById("choice"+i).value + " is checked");
+		    }
+	      };
+	      elements.push(radiocheckbox(aList, false));
+	      break;
+	    case "check":
+		  var aList = [];
+	      for (var i = 0; i < document.getElementsByName("m-choices").length; i++) {
+		    aList.push(document.getElementById("choice"+i).value);
+		    if (document.getElementsByName("m-choices")[i].checked) {
+		      console.log(document.getElementById("choice"+i).value + " is checked");
+		    }
+	      };
+	      elements.push(radiocheckbox(aList, true));
 	      break;
 	    case "fillin":
 	      var placeholder = $("#pholder").val();
 	      var answer = $("#correctAns").val();
 	      console.log("correct answer: " + answer);
-	      $(question).append(textArea(1,30,placeholder));
+	      elements.push(textArea(1,30,placeholder));
 	      break;
 	    case "essay":
 	      var placeholder = $("#pholder").val();
-	      $(question).append(textArea(5,50,placeholder));
+	      elements.push(textArea(5,50,placeholder));
 	      break;
 	    case "codeQ":
 	      var baseCode = $("#baseCode").val();
-	      $(question).append(codeArea(baseCode));
+	      elements.push(codeArea(baseCode));
 	      break;
 	    default:
-	      //something wrong?
+	      //TODO: something wrong?
 	      break;
 	  }
 	
-	  $(newtab.document.getElementsByClassName("quiz")[0]).append(question);
+	  $(newtab.document.getElementsByClassName("quiz")[0]).append(quesCon(1, elements));
+	});
+
+	$('#save').click(function(e) {
+		console.log(quizSave);
 	});
     </script>
   </body>

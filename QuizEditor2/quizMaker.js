@@ -29,7 +29,7 @@ function questionSet(qClass, qList) {
 
 function quesCon(id, list) {
 	var container = document.createElement("DIV");
-	$(container).addClass("question");
+	$(container).addClass("Q");
 	$(container).attr("id",id);
 
 	for (var key in list) {
@@ -42,15 +42,16 @@ function quesCon(id, list) {
 function html(html,id) {
 	var container = document.createElement("SPAN");
 	$(container).html(html);
-	//$(container).addClass("nonquestion");
+	$(container).addClass("nonquestion");
 	$(container).attr("id",id);
 
 	return container;
 }
 
-function dropdown(pHolder, aList, isMultiple) {
+//TODO: a real quiz would need to specify values/classes/ids in order for show/hide to work
+function dropdown(pHolder, aList, isMultiple) { 
 	var question = document.createElement("SELECT");
-	$(question).attr("data-placeholder",pHolder||"Pick an Answer...");
+	// $(question).attr("data-placeholder",pHolder||"Pick an Answer..."); - nO MORE
 	$(question).addClass("question");
 	// for chosen select or whatever
 	$(question).addClass("chosen-select");
@@ -64,12 +65,17 @@ function dropdown(pHolder, aList, isMultiple) {
 		$(question).addClass("singledrop");
 	}
 
+	var ph = document.createElement("OPTION");
+	$(ph).attr("selected","");
+	$(ph).attr("disabled","");
+	$(ph).hide();
+	$(ph).html(pHolder);
+	$(question).append(ph);
+
 	// add answer choices
 	for (var i=0; i < aList.length; i++) {
 		var option = document.createElement("OPTION");
-		if(i>0) {
-			$(option).html(aList[i] + "&nbsp;");
-		}
+		$(option).html(aList[i]);
 		$(option).attr("value",aList[i]);
 		$(question).append(option);
 	}
@@ -79,16 +85,16 @@ function dropdown(pHolder, aList, isMultiple) {
 	return question;
 }
 
-function radiocheckbox(id, text, name, aList, showHideList, isMultiple) {
+function radiocheckbox(aList, isMultiple) {
 	var question = document.createElement("FORM");
 	var type = isMultiple?"checkbox":"radio";
 
 	for (var i = 0; i < aList.length; i++) {
 		var input = document.createElement("INPUT");
 		$(input).attr("type",type);
-		$(input).attr("name",name);
+		$(input).attr("name","sel");
 		$(input).attr("value",aList[i]);
-		$(input).attr("id","sel"+i);
+		//$(input).attr("id","sel"+i);
 		$(question).append(input);
 
 		var label = document.createElement("LABEL");
@@ -98,7 +104,7 @@ function radiocheckbox(id, text, name, aList, showHideList, isMultiple) {
 		$(question).append(label);
 	}
 
-	showHideClass(showHideList);
+	//showHideClass(showHideList);
 	//setTabIndex(question);
 
 	return question;
@@ -129,6 +135,18 @@ function codeArea(base) {
 	//setTabIndex(codeArea);
 
 	return codeArea;
+}
+
+function showHide(id) {
+  console.log("showHide");
+  // can't hide here because they're not made yet. the elements have to be hidden manually to begin with
+  $('#'+id).change(function(e) { //the element to check has id as id
+  	console.log("#qtype changed");
+    var choice = $('#'+id).val();
+    $('.'+id).hide(); //the group of elements to show/hide have id as class
+    $('.'+choice).show(); //the values of the choices matcth the classes of the group of elements
+    console.log(choice+" was selected");
+  });
 }
 
 function buttonWithLabelAndOnClick(label,onclick){
