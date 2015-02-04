@@ -1,5 +1,6 @@
 // questionSuper(element, params) adds params.ID to element IF IT EXISTS - is it necessary to check...?
 
+/*
 // id : CSS id
 // text : Question text (in HTML)
 // question : 
@@ -24,11 +25,24 @@ function questionSet(qClass, qList) {
 
 	return container;
 }
+*/
+
+function quesCon(id, list) {
+	var container = document.createElement("DIV");
+	$(container).addClass("question");
+	$(container).attr("id",id);
+
+	for (var key in list) {
+		$(container).append(list[key]);
+	}
+
+	return container;
+}
 
 function html(html,id) {
 	var container = document.createElement("SPAN");
 	$(container).html(html);
-	$(container).addClass("nonquestion");
+	//$(container).addClass("nonquestion");
 	$(container).attr("id",id);
 
 	return container;
@@ -85,12 +99,12 @@ function radiocheckbox(id, text, name, aList, showHideList, isMultiple) {
 	}
 
 	showHideClass(showHideList);
-	setTabIndex(question);
+	//setTabIndex(question);
 
-	return ques(id, text, question);
+	return question;
 }
 
-function textArea(id, text, className, rows, cols, pHolder) {
+function textArea(rows, cols, pHolder) {
 
 	var textArea = document.createElement("TEXTAREA");
 	$(textArea).attr("rows",""+rows);
@@ -100,13 +114,21 @@ function textArea(id, text, className, rows, cols, pHolder) {
 		$(textArea).attr("placeholder",pHolder);
 	}
 
-	if(className) {
-		$(textArea).addClass(className);
-	}
-
-	setTabIndex(textArea);
+	//setTabIndex(textArea);
 	
-	return ques(id, text, textArea);
+	return textArea;
+}
+
+function codeArea(base) {
+	var codeArea = document.createElement("TEXTAREA");
+	$(codeArea).addClass("code");
+	$(codeArea).attr("rows",5);
+	$(codeArea).attr("cols",50);
+	$(codeArea).val(base);
+
+	//setTabIndex(codeArea);
+
+	return codeArea;
 }
 
 function buttonWithLabelAndOnClick(label,onclick){
@@ -141,10 +163,6 @@ function removeChoicesButton() {
 	});
 	$(but).addClass('removeChoice');
 	return but;
-}
-
-function showHideClass() {
-	
 }
 
 function SUBMIT_ONE_QUIZ() {
