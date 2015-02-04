@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./css/main.css">
     <script src="./js/jq.js" type="text/javascript"></script>
     <script src="./js/chosen_jquery.js" type="text/javascript"></script>
-    <script src="./js/quizElements.js" type="text/javascript"></script>
+    <!-- <script src="./js/quizElements.js" type="text/javascript"></script> -->
     <script src="quizMaker.js" type="text/javascript"></script>
   </head>
   <body>
@@ -84,7 +84,7 @@
 
 	<div class="QC qtype codeQ" style="display: none;">
 	  Base Code<br/>
-	  <textarea class="question" id="baseCode" rows=1 cols=30 class="code"></textarea>
+	  <textarea class="question code" id="baseCode" rows=5 cols=50></textarea>
 	</div>
 
 	<button id="add" style="display: none;">Add question</button>
@@ -105,7 +105,7 @@
 	$('#add').click(function(e) {
 	  var text = $("#quesText").val();
 	  var question = document.createElement("DIV");
-	  $(question).addClass("QC");
+	  $(question).addClass("Q"); // "QC"
 	  $(question).append(text+"<br/>");
 	  
 	  var type = $('#qtype').val();
@@ -113,35 +113,45 @@
 	    case "dropdown":
 	      var placeholder = $("#pholder").val();
 	      var aList = [];
-
 	      for (var i = 0; i < document.getElementsByName("choices").length; i++) {
-		aList.push(document.getElementById("choice"+i).value);
-		if (document.getElementsByName("choices")[i].checked) {
-		  console.log(i + " is checked");
-		}
+		    aList.push(document.getElementById("choice"+i).value);
+		    if (document.getElementsByName("choices")[i].checked) {
+		      console.log(document.getElementById("choice"+i).value + " is checked");
+		    }
 	      };
-
 	      $(question).append(dropdown(placeholder, aList, false));
 	      break;
 	    case "mult-dropdown":
 	      var placeholder = $("#pholder").val();
-	      var aList = []; //
-	      document.getElementById("dropdownAns"); //
-
+	      var aList = [];
+	      for (var i = 0; i < document.getElementsByName("m-choices").length; i++) {
+		    aList.push(document.getElementById("choice"+i).value);
+		    if (document.getElementsByName("m-choices")[i].checked) {
+		      console.log(document.getElementById("choice"+i).value + " is checked");
+		    }
+	      };
 	      $(question).append(dropdown(placeholder, aList, true));
 	      break;
 	    case "fillin":
 	      var placeholder = $("#pholder").val();
+	      var answer = $("#correctAns").val();
+	      console.log("correct answer: " + answer);
+	      $(question).append(textArea(1,30,placeholder));
+	      break;
 	    case "essay":
 	      var placeholder = $("#pholder").val();
+	      $(question).append(textArea(5,50,placeholder));
+	      break;
 	    case "codeQ":
 	      var baseCode = $("#baseCode").val();
+	      $(question).append(codeArea(baseCode));
+	      break;
 	    default:
 	      //something wrong?
 	      break;
 	  }
 	
-	  $(newtab.document.body).append(question);
+	  $(newtab.document.getElementsByClassName("quiz")[0]).append(question);
 	});
     </script>
   </body>
