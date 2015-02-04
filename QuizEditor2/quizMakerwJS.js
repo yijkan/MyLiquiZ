@@ -61,6 +61,8 @@ function showHide(id) {
 //	  }
 //	});
 
+//TODO: Maybe use opts for optional fileds rather than a million blank ones
+
 // String text (question text), String id (for div), String pHolder
 // String Array aList (answer list), String Array vList (value list)
 // boolean isMultiple, boolean showHide
@@ -111,7 +113,8 @@ function radiocheckbox(id, text, name, classNames, aList, vList, isMultiple, sho
 		$(input).attr("value",vList[i]);
 		// $(input).attr("id","sel"+i);
 		// $(input).append(aList[i]);
-		$(question).append(input+aList[i]+"<br/>");
+		$(question).append(input);
+		$(question).append(aList[i]+"<br/>");
 
 		// NOT using this anymore
 		// var label = document.createElement("LABEL");
