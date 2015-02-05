@@ -42,10 +42,9 @@
     <div class="quiz">
 	<div class="QC">
 	  Type of question<br/>
-	  <select class="question chosen-select drop singledrop" id="qtype">
-	    <!-- do placeholder eventually -->
+	  <select class="question chosen-select drop singledrop" id="qtype" data-placeholder="Choose a question type">
 	    <!-- value names match the classnames of the elements that should be shown when selected -->
-	    <option value="none" selected disabled style="display:none;">Choose a question type</option>
+	    <option value=""></option>
 	    <option value="dropdown">Dropdown</option>
 	    <option value="mult-dropdown">Multiple Dropdown</option>
 	    <option value="radio">Single Multiple Choice</option>
@@ -62,10 +61,11 @@
 
 	<div class="QC qtype dropdown mult-dropdown fillin essay" style="display: none;">
 	  Placeholder Text<br/>
-	  <textarea class="question" id="pholder" rows=1 cols=30></textarea>
+	  <textarea class="question" id="pholder" rows=1 cols=30 placeholder="Placeholder text"></textarea>
 	</div>
 
 	<!-- This is difficult to do in JS but I don't think it'll be needed in any other case so might as well hard code HTML it -->
+	<!-- Maybe use checkboxes for all of them and just make the right one based on how many are selected -->
 	<div class="QC qtype dropdown mult-dropdown radio check"  style="display: none;">
 	  Type in answer choices and select the correct answer<span class="qtype mult-dropdown check">s</span><br/>
 	  
@@ -92,29 +92,22 @@
 
 	<div class="QC qtype fillin" style="display: none;">
 	  Correct answer<br/>
-	  <textarea class="question" id="correctAns" rows=1 cols=30></textarea>
+	  <textarea class="question" id="correctAns" rows=1 cols=30 placeholder="Correct answer"></textarea>
 	</div>
 
 	<div class="QC qtype codeQ" style="display: none;">
 	  Base Code<br/>
-	  <textarea class="question code" id="baseCode" rows=5 cols=50></textarea>
+	  <textarea class="question code" id="baseCode" rows=5 cols=50 placeholder="Base code will show up in a text box"></textarea>
 	</div>
 
-	<button id="add" style="display: none;">Add Question</button>
+	<button id="add">Add Question</button>
     </div>
 
     <button id="save">Save Quiz</button>
 
     <script>
-    showHide("qtype");
-	$('#qtype').change(function(e) {
-	  type = $('#qtype').val();
-	  if (type == "none") {
-	    $('#add').hide();
-	  } else {
-	    $('#add').show();
-	  }
-	});
+	$(".chosen-select").chosen();
+	showHide("qtype");
 
 	var quizSave;
 
@@ -228,6 +221,7 @@
 	  }
 	
 	  $(newtab.document.getElementsByClassName("quiz")[0]).append(quesCon(1, elements));
+	  $(newtab.document.getElementsByClassName("chosen-select")).chosen();
 	});
 
 	$('#save').click(function(e) {

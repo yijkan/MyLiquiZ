@@ -51,7 +51,7 @@ function html(html,id) {
 //TODO: a real quiz would need to specify values/classes/ids in order for show/hide to work
 function dropdown(pHolder, aList, isMultiple) { 
 	var question = document.createElement("SELECT");
-	// $(question).attr("data-placeholder",pHolder||"Pick an Answer..."); - nO MORE
+	$(question).attr("data-placeholder",pHolder||"Pick an Answer..."); 
 	$(question).addClass("question");
 	// for chosen select or whatever
 	$(question).addClass("chosen-select");
@@ -66,10 +66,6 @@ function dropdown(pHolder, aList, isMultiple) {
 	}
 
 	var ph = document.createElement("OPTION");
-	$(ph).attr("selected","");
-	$(ph).attr("disabled","");
-	$(ph).hide();
-	$(ph).html(pHolder);
 	$(question).append(ph);
 
 	// add answer choices
